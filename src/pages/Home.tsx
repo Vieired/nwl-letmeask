@@ -12,7 +12,7 @@ export function Home() {
 
     async function handleCreateRoom() {
         if(!user) {
-            await signInWithGoogle();
+            await signInWithGoogle(); // quando tem await, então todo código abaixo dessa linha só vai executar se o retorno der sucesso
         }
 
         history.push('/rooms/new');
