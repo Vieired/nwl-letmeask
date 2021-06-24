@@ -1,49 +1,32 @@
-import { useParams } from 'react-router-dom';
-import { Button } from "../components/Button";
-import logoImg from '../assets/images/logo.svg';
-import { RoomCode } from "../components/RoomCode";
-import { FormEvent, useState } from 'react';
 import { database } from '../services/firebase';
-import { useAuth } from '../hooks/useAuth';
-import '../styles/room.scss';
+import { useParams } from 'react-router-dom';
+
+import logoImg from '../assets/images/logo.svg';
+import deleteImg from '../assets/images/delete.svg';
+
+import { Button } from "../components/Button";
 import { Question } from '../components/Question';
+import { RoomCode } from "../components/RoomCode";
+// import { useAuth } from '../hooks/useAuth';
 import { useRoom } from '../hooks/useRoom';
+
+import '../styles/room.scss';
 
 type RoomParams = {
     id: string;
 }
 
 export function AdminRoom() {
-    const { user } = useAuth();
+    // const { user } = useAuth();
     const params = useParams<RoomParams>();
-    const [newQuestion, setNewQuestion] = useState('');
     const roomId = params.id;
 
     const { title, questions } = useRoom(roomId);
 
-    async function handleSendQuestion(event: FormEvent) {
-        event.preventDefault();
-
-        if(newQuestion.trim() === '') {
-            return;
-        }
-
-        if(!user) {
-            throw new Error('You must be logger in');
-        }
-
-        const question = {
-            content: newQuestion,
-            author: {
-                name: user?.name,
-                avatar: user.avatar,
-            },
-            isHighlighted: false,
-            isAnswered: false
+    async function handleDeleteQuestion(questionId: string) {
+        if (window.confirm('Tem certeza que você deseja excluir esta pergunta?')) {
+            await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
         };
-
-        await database.ref(`rooms/${roomId}/questions`).push(question);
-        setNewQuestion('');
     }
 
     return (
@@ -64,36 +47,24 @@ export function AdminRoom() {
                     { questions.length > 0 && <span>{questions.length} pergunta(s)</span> }
                 </div>
 
-                <form onSubmit={handleSendQuestion}>
-                    <textarea
-                        placeholder="O que você quer perguntar"
-                        onChange={event => setNewQuestion(event.target.value)}
-                        value={newQuestion}>
-                    </textarea>
+                <div className="question-list">
+                    {questions.map(question => {
+                        return (
+                            <Question
+                                key={question.id}
+                                content={question.content}
+                                author={question.author}
+                            >
+                                <button
+                                    type="button">
+                                    onClick={() => handleDeleteQuestion(question.id)}
 
-                    <div className="form-footer">
-                        { user ? (
-                            <div className="user-info">
-                                <img src={user.avatar} alt={user.name} />
-                                <span>{user.name}</span>
-                            </div>
-                        ) : (
-                            <span>Para enviar uma pergunta, <button>faça seu login</button>.</span>
-                        ) }
-                        
-                        <Button type="submit" disabled={!user}>Enviar pergunta</Button>
-                    </div>
-                </form>
-
-                {questions.map(question => {
-                    return (
-                        <Question
-                            key={question.id}
-                            content={question.content}
-                            author={question.author}
-                        />
-                    );
-                })}
+                                </button>
+                                <img src={deleteImg} alt="Remover pergunta" />
+                            </Question>
+                        );
+                    })}
+                </div>
             </main>
         </div>
     );

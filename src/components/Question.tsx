@@ -1,14 +1,18 @@
+import { ReactNode } from "react";
+
 type QuestionProps = {
     content: string;
     author: {
         name: string;
         avatar: string;
-    }
+    };
+    children?: ReactNode;
 }
 
 export function Question({
     content,
-    author
+    author,
+    children
 }:QuestionProps) {
     return (
         <div className="question">
@@ -18,6 +22,7 @@ export function Question({
                     <img src={author.avatar} alt="" />
                     <span>{author.name}</span>
                 </div>
+                <div>{ children }</div>
             </footer>
         </div>
     );
