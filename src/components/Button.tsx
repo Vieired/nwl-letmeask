@@ -5,10 +5,15 @@ import '../styles/button.scss';
  * Interface ButtonProps
  * A tipagem ButtonHTMLAttributes permite ao typescript saber o que exibir no Intelicense no Button
 */
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+    isOutlined?: boolean
+};
 
-export function Button(props: ButtonProps) {
+export function Button({ isOutlined = false, ...props }: ButtonProps) {
     return (
-        <button className="button" {...props} />
+        <button
+            className={`nutton ${isOutlined ? 'outlined' : ''}`}
+            {...props}
+        />
     )
 }
