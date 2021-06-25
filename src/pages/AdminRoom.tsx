@@ -67,11 +67,11 @@ export function AdminRoom() {
                                 author={question.author}
                             >
                                 <button
-                                    type="button">
+                                    type="button"
                                     onClick={() => handleDeleteQuestion(question.id)}
-
-                                </button>
-                                <img src={deleteImg} alt="Remover pergunta" />
+                                >
+                                    <img src={deleteImg} alt="Remover pergunta" />
+                                </button>                                                                
                             </Question>
                         );
                     })}
